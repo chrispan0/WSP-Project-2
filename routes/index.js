@@ -7,38 +7,51 @@ var User = require("../model/user");
 // Route to render the home page
 router.get("/", async (req, res, next) => {
   session = req.cookies.session;
+  // Check if the session exists in the database
   if ((await User.exists({ sessions: { $in: [session] } })) !== null) {
+  // If the session exists and the 'submitted' query parameter is true 
     if (req.query.submitted == "true") {
       res.render("index", { title: "CJB Support", submitted: true, loggedinnav: true });
+    // If the session exists and the 'submitted' query parameter is false
     } else if (req.query.submitted == "false") {
       res.render("index", { title: "CJB Support", submitted: false, loggedinnav: true });
     } else {
       res.render("index", { title: "CJB Support", loggedinnav: true });
     }
   } else {
+    // If the session does not exist and the 'submitted' query parameter is true
     if (req.query.submitted == "true") {
       res.render("index", { title: "CJB Support", submitted: true, loggedinnav: false });
+    // If the session does not exist and the 'submitted' query parameter is false
     } else if (req.query.submitted == "false") {
       res.render("index", { title: "CJB Support", submitted: false, loggedinnav: false });
     } else {
+      // If the session does not exist and no 'submitted' query parameter is provided
       res.render("index", { title: "CJB Support", loggedinnav: false });
     }
   }
 });
+// Route for the ticket editor page
 router.get("/editor", async (req, res, next) => {
   session = req.cookies.session;
+   // Check if the session exists in the database
   if ((await User.exists({ sessions: { $in: [session] } })) !== null) {
   try {
+  // Find the ticket using the ID provided in the query parameter
     let ticket = await Ticket.findById(req.query.id);
+  // If the ticket exists, render the editor page with the ticket data  
     if (ticket) {
       res.render("editor", { title: "Ticket Editor", ticket: ticket, loggedinnav: true });
     } else {
+  // If the ticket does not exist, render the editor page without ticket data
       res.render("editor", { title: "Ticket Editor", loggedinnav: true });
     }
   } catch {
+  // If there is an error (e.g., invalid ID), redirect to the editor page
     res.redirect("/editor");
   }
 } else {
+// If the session does not exist, redirect to the login page
   res.redirect("/login");
 }
 });
@@ -103,22 +116,28 @@ router.get("/manage", async (req, res, next) => {
     res.redirect("/login");
   }
 });
-
+// Route for the registration page
 router.get("/register", function (req, res, next) {
+ // Check if the 'match' query parameter is set to 'false'
   if (req.query.match == "false") {
     res.render("register", { title: "Register", match: false, loggedinnav: false });
+  // Check if the 'registered' query parameter is set to 'false'
   } else if (req.query.registered == "false") {
     res.render("register", { title: "Register", registered: false, loggedinnav: false });
+  // If no query parameters match, render the registration page normally
   } else {
     res.render("register", { title: "Register", loggedinnav: false });
   }
 });
-
+// Route for the login page
 router.get("/login", function (req, res, next) {
+  // Check if the 'registered' query parameter is set to 'true'  
   if (req.query.registered == "true") {
     res.render("login", { title: "Login", registered: true, loggedinnav: false });
+  // Check if the 'loggedin' query parameter is set to 'false'
   } else if (req.query.loggedin == "false") {
     res.render("login", { title: "Login", loggedin: false, loggedinnav: false });
+   // If no query parameters match, render the login page normally
   } else {
     res.render("login", { title: "Login", loggedinnav: false });
   }
