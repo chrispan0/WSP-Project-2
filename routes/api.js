@@ -72,7 +72,7 @@ router.post("/delete", async (req, res, next) => {
     res.redirect("/manage?deleted=false");
   }
 });
-
+// POST route for user registration
 router.post("/register", async (req, res, next) => {
   try {
     var { name, email, password, confirmpassword } = req.body;
@@ -96,7 +96,7 @@ router.post("/register", async (req, res, next) => {
     res.redirect("/register?registered=false");
   }
 });
-
+// POST route for user login
 router.post("/login", async (req, res, next) => {
   try {
     var { email, password } = req.body;
@@ -123,7 +123,7 @@ router.post("/login", async (req, res, next) => {
     res.redirect("/login?loggedin=false"); // TODO: ERROR MESSAGE
   }
 });
-
+// GET route for user logout
 router.get("/logout", async (req, res, next) => {
   try {
     session = req.cookies.session;
